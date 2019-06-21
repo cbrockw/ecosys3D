@@ -68,8 +68,8 @@ def _eco_method(function, inline=False, dist_safe=True, local_vars=None,
     def eco_method_wrapper(*args, **kwargs):
         from . import runtime_settings as rs, runtime_state as rst
         from .backend import flush, get_backend
-        from .state import VerosState
-        from .state_dist import DistributedVerosState
+        from .state import ecoState
+        from .state_dist import DistributedecoState
         from .distributed import broadcast
 
         if not inline:
@@ -83,7 +83,7 @@ def _eco_method(function, inline=False, dist_safe=True, local_vars=None,
 
         eco_state = args[narg]
 
-        if not isinstance(eco_state, VerosState):
+        if not isinstance(eco_state, ecoState):
             raise TypeError('first argument to a eco_method must be subclass of VerosState')
 
         reset_dist_safe = False

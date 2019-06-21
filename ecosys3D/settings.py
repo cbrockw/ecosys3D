@@ -9,8 +9,7 @@ SETTINGS = OrderedDict([
     ('nx', Setting(0, int, 'Grid points in zonal (x) direction')),
     ('ny', Setting(0, int, 'Grid points in meridional (y,j) direction')),
     ('nz', Setting(0, int, 'Grid points in vertical (z,k) direction')),
-    ('dt_mom', Setting(0., float, 'Time step in seconds for momentum')),
-    ('dt_tracer', Setting(0., float, 'Time step for tracers, can be larger than dt_mom')),
+    ('dt', Setting(0., float, 'Time step')),
     ('runlen', Setting(0., float, 'Length of simulation in seconds')),
     ('AB_eps', Setting(0.1, float, 'Deviation from Adam-Bashforth weighting')),
 

@@ -1,6 +1,5 @@
 import timeit
 
-
 class Timer:
     def __init__(self, name):
         self.name = name

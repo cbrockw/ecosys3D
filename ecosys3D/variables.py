@@ -40,11 +40,11 @@ V_GRID = ('xt', 'yu', 'zt')
 W_GRID = ('xt', 'yt', 'zw')
 ZETA_GRID = ('xu', 'yu', 'zt')
 TIMESTEPS = ('timesteps',)
-ISLE = ('isle',)
+#ISLE = ('isle',)
 TENSOR_COMP = ('tensor1', 'tensor2')
 
 # those are written to netCDF output by default
-BASE_DIMENSIONS = XT + XU + YT + YU + ZT + ZW + ISLE
+BASE_DIMENSIONS = XT + XU + YT + YU + ZT + ZW #+ ISLE
 GHOST_DIMENSIONS = ('xt', 'yt', 'xu', 'yu')
 
 
@@ -412,41 +412,41 @@ MAIN_VARIABLES = OrderedDict([
     ('land_map', Variable(
         'Land map', T_HOR, '', 'Land map'
     )),
-    ('isle', Variable(
-        'Island number', ISLE, '', 'Island number', output=True
-    )),
-    ('psin', Variable(
-        'Boundary streamfunction', ZETA_HOR + ISLE, 'm^3/s',
-        'Boundary streamfunction', output=True, time_dependent=False
-    )),
-    ('dpsin', Variable(
-        'Boundary streamfunction factor', ISLE + TIMESTEPS, '?',
-        'Boundary streamfunction factor', write_to_restart=True
-    )),
-    ('line_psin', Variable(
-        'Boundary line integrals', ISLE + ISLE, '?',
-        'Boundary line integrals', time_dependent=False
-    )),
-    ('boundary_mask', Variable(
-        'Boundary mask', T_HOR + ISLE, '',
-        'Boundary mask', time_dependent=False
-    )),
-    ('line_dir_south_mask', Variable(
-        'Line integral mask', T_HOR + ISLE, '',
-        'Line integral mask', time_dependent=False
-    )),
-    ('line_dir_north_mask', Variable(
-        'Line integral mask', T_HOR + ISLE, '',
-        'Line integral mask', time_dependent=False
-    )),
-    ('line_dir_east_mask', Variable(
-        'Line integral mask', T_HOR + ISLE, '',
-        'Line integral mask', time_dependent=False
-    )),
-    ('line_dir_west_mask', Variable(
-        'Line integral mask', T_HOR + ISLE, '',
-        'Line integral mask', time_dependent=False
-    )),
+#    ('isle', Variable(
+#        'Island number', ISLE, '', 'Island number', output=True
+#    )),
+#    ('psin', Variable(
+#        'Boundary streamfunction', ZETA_HOR + ISLE, 'm^3/s',
+#        'Boundary streamfunction', output=True, time_dependent=False
+#    )),
+#    ('dpsin', Variable(
+#        'Boundary streamfunction factor', ISLE + TIMESTEPS, '?',
+#        'Boundary streamfunction factor', write_to_restart=True
+#    )),
+#    ('line_psin', Variable(
+#        'Boundary line integrals', ISLE + ISLE, '?',
+#        'Boundary line integrals', time_dependent=False
+#    )),
+#    ('boundary_mask', Variable(
+#        'Boundary mask', T_HOR + ISLE, '',
+#        'Boundary mask', time_dependent=False
+#    )),
+#    ('line_dir_south_mask', Variable(
+#        'Line integral mask', T_HOR + ISLE, '',
+#        'Line integral mask', time_dependent=False
+#    )),
+#    ('line_dir_north_mask', Variable(
+#        'Line integral mask', T_HOR + ISLE, '',
+#        'Line integral mask', time_dependent=False
+#    )),
+#    ('line_dir_east_mask', Variable(
+#        'Line integral mask', T_HOR + ISLE, '',
+#        'Line integral mask', time_dependent=False
+#    )),
+#    ('line_dir_west_mask', Variable(
+#        'Line integral mask', T_HOR + ISLE, '',
+#        'Line integral mask', time_dependent=False
+#    )),
 
     ('K_gm', Variable(
         'Skewness diffusivity', W_GRID, 'm^2/s',
@@ -561,167 +561,6 @@ CONDITIONAL_VARIABLES = OrderedDict([
             'Meridional coordinate (U)', YU, 'km',
             'Meridional (y) coordinate of U-grid point',
             output=True, scale=1e-3, time_dependent=False
-        )),
-    ])),
-
-    ('enable_tempsalt_sources', OrderedDict([
-        ('temp_source', Variable(
-            'Source of temperature', T_GRID, 'K/s',
-            'Non-conservative source of temperature', output=True
-        )),
-        ('salt_source', Variable(
-            'Source of salt', T_GRID, 'g/(kg s)',
-            'Non-conservative source of salt', output=True
-        )),
-    ])),
-
-    ('enable_momentum_sources', OrderedDict([
-        ('u_source', Variable(
-            'Source of zonal velocity', U_GRID, 'm/s^2 (?)',
-            'Non-conservative source of zonal velocity', output=True
-        )),
-        ('v_source', Variable(
-            'Source of meridional velocity', V_GRID, 'm/s^2 (?)',
-            'Non-conservative source of meridional velocity', output=True
-        )),
-    ])),
-
-    ('enable_neutral_diffusion', OrderedDict([
-        ('K_11', Variable('Isopycnal mixing coefficient', T_GRID, '?', 'Isopycnal mixing tensor component')),
-        ('K_13', Variable('Isopycnal mixing coefficient', T_GRID, '?', 'Isopycnal mixing tensor component')),
-        ('K_22', Variable('Isopycnal mixing coefficient', T_GRID, '?', 'Isopycnal mixing tensor component')),
-        ('K_23', Variable('Isopycnal mixing coefficient', T_GRID, '?', 'Isopycnal mixing tensor component')),
-        ('K_31', Variable('Isopycnal mixing coefficient', T_GRID, '?', 'Isopycnal mixing tensor component')),
-        ('K_32', Variable('Isopycnal mixing coefficient', T_GRID, '?', 'Isopycnal mixing tensor component')),
-        ('K_33', Variable('Isopycnal mixing coefficient', T_GRID, '?', 'Isopycnal mixing tensor component')),
-        ('Ai_ez', Variable('?', T_GRID + TENSOR_COMP, '?', '?')),
-        ('Ai_nz', Variable('?', T_GRID + TENSOR_COMP, '?', '?')),
-        ('Ai_bx', Variable('?', T_GRID + TENSOR_COMP, '?', '?')),
-        ('Ai_by', Variable('?', T_GRID + TENSOR_COMP, '?', '?')),
-    ])),
-    ('enable_skew_diffusion', OrderedDict([
-        ('B1_gm', Variable(
-            'Zonal component of GM streamfunction', V_GRID, 'm^2/s',
-            'Zonal component of GM streamfunction'
-        )),
-        ('B2_gm', Variable(
-            'Meridional component of GM streamfunction', U_GRID, 'm^2/s',
-            'Meridional component of GM streamfunction'
-        ))
-    ])),
-    ('enable_bottom_friction_var', OrderedDict([
-        ('r_bot_var_u', Variable(
-            'Bottom friction coeff.', U_HOR, '?', 'Zonal bottom friction coefficient'
-        )),
-        ('r_bot_var_v', Variable(
-            'Bottom friction coeff.', V_HOR, '?', 'Meridional bottom friction coefficient'
-        )),
-    ])),
-    ('enable_TEM_friction', OrderedDict([
-        ('kappa_gm', Variable('Vertical diffusivity', W_GRID, 'm^2/s', 'Vertical diffusivity')),
-    ])),
-    ('enable_tke', OrderedDict([
-        ('tke', Variable(
-            'Turbulent kinetic energy', W_GRID + TIMESTEPS, 'm^2/s^2',
-            'Turbulent kinetic energy', output=True, write_to_restart=True
-        )),
-        ('sqrttke', Variable(
-            'Square-root of TKE', W_GRID, 'm/s', 'Square-root of TKE'
-        )),
-        ('dtke', Variable(
-            'Turbulent kinetic energy tendency', W_GRID + TIMESTEPS, 'm^2/s^3',
-            'Turbulent kinetic energy tendency', write_to_restart=True
-        )),
-        ('Prandtlnumber', Variable('Prandtl number', W_GRID, '', 'Prandtl number')),
-        ('mxl', Variable('Mixing length', W_GRID, 'm', 'Mixing length')),
-        ('forc_tke_surface', Variable(
-            'TKE surface flux', T_HOR, 'm^3/s^3', 'TKE surface flux', output=True
-        )),
-        ('tke_diss', Variable(
-            'TKE dissipation', W_GRID, 'm^2/s^3', 'TKE dissipation'
-        )),
-        ('tke_surf_corr', Variable(
-            'Correction of TKE surface flux', T_HOR, 'm^3/s^3',
-            'Correction of TKE surface flux'
-        )),
-    ])),
-    ('enable_eke', OrderedDict([
-        ('eke', Variable(
-            'meso-scale energy', W_GRID + TIMESTEPS, 'm^2/s^2',
-            'meso-scale energy', output=True, write_to_restart=True
-        )),
-        ('deke', Variable(
-            'meso-scale energy tendency', W_GRID + TIMESTEPS, 'm^2/s^3',
-            'meso-scale energy tendency', write_to_restart=True
-        )),
-        ('sqrteke', Variable(
-            'square-root of eke', W_GRID, 'm/s', 'square-root of eke'
-        )),
-        ('L_rossby', Variable('Rossby radius', T_HOR, 'm', 'Rossby radius')),
-        ('L_rhines', Variable('Rhines scale', W_GRID, 'm', 'Rhines scale')),
-        ('eke_len', Variable('Eddy length scale', T_GRID, 'm', 'Eddy length scale')),
-        ('eke_diss_iw', Variable(
-            'Dissipation of EKE to IW', W_GRID, 'm^2/s^3',
-            'Dissipation of EKE to internal waves'
-        )),
-        ('eke_diss_tke', Variable(
-            'Dissipation of EKE to TKE', W_GRID, 'm^2/s^3',
-            'Dissipation of EKE to TKE'
-        )),
-        ('eke_bot_flux', Variable(
-            'Flux by bottom friction', T_HOR, 'm^3/s^3', 'Flux by bottom friction'
-        )),
-    ])),
-    ('enable_eke_leewave_dissipation', OrderedDict([
-        ('eke_topo_hrms', Variable(
-            '?', T_HOR, '?', '?'
-        )),
-        ('eke_topo_lam', Variable(
-            '?', T_HOR, '?', '?'
-        )),
-        ('hrms_k0', Variable(
-            '?', T_HOR, '?', '?'
-        )),
-        ('c_lee', Variable(
-            'Lee wave dissipation coefficient', T_HOR, '1/s',
-            'Lee wave dissipation coefficient'
-        )),
-        ('eke_lee_flux', Variable(
-            'Lee wave flux', T_HOR, 'm^3/s^3', 'Lee wave flux',
-        )),
-        ('c_Ri_diss', Variable(
-            'Interior dissipation coefficient', W_GRID, '1/s',
-            'Interior dissipation coefficient'
-        )),
-    ])),
-    ('enable_idemix', OrderedDict([
-        ('E_iw', Variable(
-            'Internal wave energy', W_GRID + TIMESTEPS, 'm^2/s^2',
-            'Internal wave energy', output=True, write_to_restart=True
-        )),
-        ('dE_iw', Variable(
-            'Internal wave energy tendency', W_GRID + TIMESTEPS, 'm^2/s^2',
-            'Internal wave energy tendency', write_to_restart=True
-        )),
-        ('c0', Variable(
-            'Vertical IW group velocity', W_GRID, 'm/s',
-            'Vertical internal wave group velocity'
-        )),
-        ('v0', Variable(
-            'Horizontal IW group velocity', W_GRID, 'm/s',
-            'Horizontal internal wave group velocity'
-        )),
-        ('alpha_c', Variable('?', W_GRID, '?', '?')),
-        ('iw_diss', Variable(
-            'IW dissipation', W_GRID, 'm^2/s^3', 'Internal wave dissipation'
-        )),
-        ('forc_iw_surface', Variable(
-            'IW surface forcing', T_HOR, 'm^3/s^3',
-            'Internal wave surface forcing', time_dependent=False, output=True
-        )),
-        ('forc_iw_bottom', Variable(
-            'IW bottom forcing', T_HOR, 'm^3/s^3',
-            'Internal wave bottom forcing', time_dependent=False, output=True
         )),
     ])),
 ])

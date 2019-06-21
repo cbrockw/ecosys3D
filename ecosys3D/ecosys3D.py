@@ -3,7 +3,7 @@ import abc
 from loguru import logger
 
 from ecosys3D import (
-                   settings, time, handlers, logs, distributed, progress,
+                   settings, diagnostics, time, handlers, logs, distributed, progress,
                    runtime_settings as rs, runtime_state as rst
                    )
 from ecosys3D.state import ecoState
@@ -52,7 +52,7 @@ class ecoSetup(metaclass=abc.ABCMeta):
             self.state = ecoState()
         
         self.state.timers = {k: Timer(k) for k in (
-                                                   'setup', 'main'
+                                                   'setup', 'main','diagnostics'
                                                    )}
     @abc.abstractmethod
     def set_parameter(self, vs):
@@ -75,32 +75,25 @@ class ecoSetup(metaclass=abc.ABCMeta):
         with vs.timers['setup']:
             logger.info('Setting up everything')
     
-#            self.set_parameter(vs)
+            self.set_parameter(vs)
 #
 #            for setting, value in self.override_settings.items():
 #                setattr(vs, setting, value)
 #
 #            settings.check_setting_conflicts(vs)
 #            distributed.validate_decomposition(vs)
-#            vs.allocate_variables()
+            vs.allocate_variables()
 #
-#            self.set_grid(vs)
-#            numerics.calc_grid(vs)
+            self.read_grid(vs)
+            self.read_topography(vs)
+            numerics.calc_grid(vs)
 #
-#            self.set_coriolis(vs)
-#            numerics.calc_beta(vs)
-#
-#            self.set_topography(vs)
-#            numerics.calc_topo(vs)
-#
-#            self.set_initial_conditions(vs)
+            self.read_initial_conditions(vs)
 #            numerics.calc_initial_conditions(vs)
-#            streamfunction.streamfunction_init(vs)
-#            eke.init_eke(vs)
 #
-#            vs.diagnostics = diagnostics.create_diagnostics(vs)
-#            self.set_diagnostics(vs)
-#            diagnostics.initialize(vs)
+            vs.diagnostics = diagnostics.create_diagnostics(vs)
+            self.set_diagnostics(vs)
+            diagnostics.initialize(vs)
 #            diagnostics.read_restart(vs)
 #
 #            self.set_forcing(vs)
@@ -118,8 +111,8 @@ class ecoSetup(metaclass=abc.ABCMeta):
         """
         vs = self.state
                 
-        logger.info('\nStarting integration for {0[0]:.1f} {0[1]}'.format(time.format_time(vs.runlen)))
-                
+        logger.info('\nStarting model run for {0[0]:.1f} {0[1]}'.format(time.format_time(vs.runlen)))
+        
         start_time, start_iteration = vs.time, vs.itt
         profiler = None
                         
@@ -129,8 +122,6 @@ class ecoSetup(metaclass=abc.ABCMeta):
             try:
                 with pbar:
                     while vs.time - start_time < vs.runlen:
-                        with vs.timers['diagnostics']:
-                            diagnostics.write_restart(vs)
                     
                         if vs.itt - start_iteration == 3 and rs.profile_mode and rst.proc_rank == 0:
                         # when using bohrium, most kernels should be pre-compiled by now
@@ -139,25 +130,22 @@ class ecoSetup(metaclass=abc.ABCMeta):
                         with vs.timers['main']:
                             self.set_forcing(vs)
                             
-                            utilities.enforce_boundaries(vs, vs.u[:, :, :, vs.taup1])
-                            utilities.enforce_boundaries(vs, vs.v[:, :, :, vs.taup1])
+                            #utilities.enforce_boundaries(vs, vs.u[:, :, :, vs.taup1])
+                            #utilities.enforce_boundaries(vs, vs.v[:, :, :, vs.taup1])
 
                         vs.itt += 1
-                        vs.time += vs.dt_tracer
-                        pbar.advance_time(vs.dt_tracer)
+                        vs.time += vs.dt
+                        pbar.advance_time(vs.dt)
 
                         self.after_timestep(vs)
-
+                        
                         with vs.timers['diagnostics']:
                             if not diagnostics.sanity_check(vs):
                                 raise RuntimeError('solution diverged at iteration {}'.format(vs.itt))
 
-                            if vs.enable_neutral_diffusion and vs.enable_skew_diffusion:
-                                isoneutral.isoneutral_diag_streamfunction(vs)
-
                             diagnostics.diagnose(vs)
                             diagnostics.output(vs)
-                                
+                    
                         # NOTE: benchmarks parse this, do not change / remove
                         logger.debug(' Time step took {:.2f}s', vs.timers['main'].get_last_time())
 
@@ -168,7 +156,7 @@ class ecoSetup(metaclass=abc.ABCMeta):
                 logger.critical('Stopping integration at iteration {}', vs.itt)
                 raise
             else:
-                logger.success('Integration done\n')
+                logger.success('Model run complete\n')
             finally:
                 #diagnostics.write_restart(vs, force=True)
                 logger.debug('\n'.join([
